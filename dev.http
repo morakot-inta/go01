@@ -1,0 +1,18 @@
+@URL = http://localhost:8080
+
+### health
+GET {{URL}}/health
+
+### auth
+GET {{URL}}/auth
+
+### auth post
+POST {{URL}}/auth
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+
