@@ -15,4 +15,12 @@ Content-Type: application/json
   "password": "admin"
 }
 
+### create post
+POST {{URL}}/post
+Content-Type: application/json
+
+{
+  "Title": "example",
+  "Content": "This is an example."
+}
 
