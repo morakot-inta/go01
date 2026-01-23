@@ -19,8 +19,10 @@ type PostRequestBody struct {
 	Content string `json:"content"`
 }
 
+var redisClient *redis.Client
+
 func SetRedisClient(client *redis.Client) {
-	client = client
+	redisClient = client
 }
 
 func PostHandler(w http.ResponseWriter, r *http.Request) {
@@ -48,12 +50,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Received post: Title=%s, Content=%s\n", postReq.Title, postReq.Content)
 
-		// publish to redis stream
-		client := redis.NewClient(&redis.Options{
-			Addr: "localhost:6379",
-		})
-
-		streamID, err := client.XAdd(context.Background(), &redis.XAddArgs{
+		streamID, err := redisClient.XAdd(context.Background(), &redis.XAddArgs{
 			Stream: "posts",
 			ID:     "*",
 			Values: map[string]interface{}{
@@ -62,8 +59,6 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				"timestamp": time.Now().Unix(),
 			},
 		}).Result()
-
-		defer client.Close()
 
 		if err != nil {
 			log.Printf("Error adding post to Redis stream: %s\n", err.Error())
